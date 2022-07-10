@@ -5,7 +5,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from random import randint
-from collections import Counter
 
 
 CHROME_DRIVER_PATH = Service("/Users/***********/Development/chromedriver")
