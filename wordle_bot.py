@@ -5,10 +5,12 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from random import randint
+from collections import Counter
 
 
-CHROME_DRIVER_PATH = Service("/Users/*****/Development/chromedriver")
+CHROME_DRIVER_PATH = Service("/Users/***********/Development/chromedriver")
 WEBSITE = "https://www.nytimes.com/games/wordle/index.html"
+STARTER_WORDS = ['LATER', 'LEAST', 'STORE', 'RAISE', 'TRAIL', 'TEARS', 'TRIAL', 'SOLAR', 'RATES', 'RATIO', 'TALES', 'TRIES', 'TAILS', 'AROSE', 'ARISE', 'STEAL', 'TIRES', 'ALERT', 'STARE', 'STOLE', 'RAILS', 'ROAST', 'TILES', 'ROLES', 'ALTER', 'SLATE', 'AISLE', 'STAIR', 'RIOTS', 'STALE', 'RITES', 'LASER', 'LOSER', 'LITER', 'ASTIR', 'STILE', 'TOILS', 'LIARS', 'ALTOS', 'ASTER', 'TIERS', 'IRATE', 'EARLS', 'LAIRS', 'TRIOS', 'LORES', 'TEALS', 'ALOES', 'SORTA', 'TARES', 'REALS', 'ISLET', 'SITAR', 'RILES', 'IOTAS', 'TESLA', 'ORALS', 'ROILS', 'LITES', 'ASTRO', 'LITRE', 'ORATE', 'TIROS', 'LOTSA', 'TILER', 'STOAE', 'LIRAS', 'TORSI', 'LIEST', 'OILER', 'TAELS', 'LIERS', 'SLIER', 'RIALS', 'TOILE', 'TAROS', 'STELA', 'OSIER']
 
 
 class WordleBot:
@@ -34,7 +36,8 @@ class WordleBot:
     def guess_word(self):
         # bot guess:
         if self.tile_index_position == 0:
-            self.bot_guess = "SLATE"
+            random_index = randint(0, len(STARTER_WORDS) - 1)
+            self.bot_guess = STARTER_WORDS[random_index]
         else:
             random_index = randint(0, len(self.valid_words) - 1)
             self.bot_guess = self.valid_words[random_index]
@@ -43,7 +46,7 @@ class WordleBot:
         for index, letter in enumerate(self.bot_guess):
             self.actions.send_keys(letter)
             self.actions.perform()
-            time.sleep(1)
+            time.sleep(500/1000)
             # keeps track of which index position to start checking elements in tile list [UP TO 30]:
             self.tile_index_position += 1
 
