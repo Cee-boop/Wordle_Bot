@@ -7,7 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from random import randint
 
 
-CHROME_DRIVER_PATH = Service("/Users/***********/Development/chromedriver")
+CHROME_DRIVER_PATH = Service("/Users/chantellefourlze/Development/chromedriver")
 WEBSITE = "https://www.nytimes.com/games/wordle/index.html"
 STARTER_WORDS = ['LATER', 'LEAST', 'STORE', 'RAISE', 'TRAIL', 'TEARS', 'TRIAL', 'SOLAR', 'RATES', 'RATIO', 'TALES', 'TRIES', 'TAILS', 'AROSE', 'ARISE', 'STEAL', 'TIRES', 'ALERT', 'STARE', 'STOLE', 'RAILS', 'ROAST', 'TILES', 'ROLES', 'ALTER', 'SLATE', 'AISLE', 'STAIR', 'RIOTS', 'STALE', 'RITES', 'LASER', 'LOSER', 'LITER', 'ASTIR', 'STILE', 'TOILS', 'LIARS', 'ALTOS', 'ASTER', 'TIERS', 'IRATE', 'EARLS', 'LAIRS', 'TRIOS', 'LORES', 'TEALS', 'ALOES', 'SORTA', 'TARES', 'REALS', 'ISLET', 'SITAR', 'RILES', 'IOTAS', 'TESLA', 'ORALS', 'ROILS', 'LITES', 'ASTRO', 'LITRE', 'ORATE', 'TIROS', 'LOTSA', 'TILER', 'STOAE', 'LIRAS', 'TORSI', 'LIEST', 'OILER', 'TAELS', 'LIERS', 'SLIER', 'RIALS', 'TOILE', 'TAROS', 'STELA', 'OSIER']
 
@@ -65,6 +65,8 @@ class WordleBot:
                 self.incorrect_pos[letter_index] = self.bot_guess[letter_index]
             elif data_state == "correct":
                 self.correct_pos[letter_index] = self.bot_guess[letter_index]
+                if self.bot_guess[letter_index] in self.absent_letters:
+                    self.absent_letters.remove(self.bot_guess[letter_index])
             else:
                 if self.correct_pos and self.bot_guess[letter_index] not in self.correct_pos.values() or not self.correct_pos:
                     self.absent_letters.append(self.bot_guess[letter_index])
