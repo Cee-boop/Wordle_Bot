@@ -39,7 +39,7 @@ class WordleBot:
 
     def guess_word(self):
         # bot guess:
-        if not self.correct_pos and not self.incorrect_pos and self.tile_index_position == 0:
+        if self.tile_index_position == 0:
             random_index = randint(0, len(STARTER_WORDS) - 1)
             self.bot_guess = STARTER_WORDS[random_index]
         elif not self.correct_pos and not self.incorrect_pos:
