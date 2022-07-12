@@ -5,6 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from random import randint
+from collections import Counter
 
 
 CHROME_DRIVER_PATH = Service("/Users/chantellefourlze/Development/chromedriver")
@@ -26,6 +27,10 @@ class WordleBot:
         # create valid word list:
         with open(file='word_list.txt') as word_file:
             self.valid_words = [word.strip().upper() for word in word_file]
+            # all letter frequencies in order:
+            self.letter_counts = Counter()
+            for word in self.valid_words:
+                self.letter_counts.update(word)
 
     def setup(self):
         self.driver.get(WEBSITE)
@@ -34,12 +39,14 @@ class WordleBot:
 
     def guess_word(self):
         # bot guess:
-        if self.tile_index_position == 0:
+        if not self.correct_pos and not self.incorrect_pos and self.tile_index_position == 0:
             random_index = randint(0, len(STARTER_WORDS) - 1)
             self.bot_guess = STARTER_WORDS[random_index]
-        else:
+        elif not self.correct_pos and not self.incorrect_pos:
             random_index = randint(0, len(self.valid_words) - 1)
             self.bot_guess = self.valid_words[random_index]
+        else:
+            self.bot_guess = self.valid_words[0]
 
         # enter word in current row of tiles:
         for index, letter in enumerate(self.bot_guess):
@@ -81,34 +88,41 @@ class WordleBot:
         # keep track of the highest correct and present letter streaks to optimize word list without duplicating words:
         highest_correct_streak = len(self.correct_pos)
         highest_present_streak = len(self.incorrect_pos)
+        highest_word_score = 0
         print(f"bot guessed: {self.bot_guess}")
 
         # loop through word and check if any letter indices match in each dictionary [CORRECT/INCORRECT/ABSENT]:
         for i, word in enumerate(self.valid_words):
             correct_streak = 0
             present_streak = 0
-            absent_streak = 0
+            word_score = 0
+            letter_is_absent = False
 
             # check if letter is absent:
-            if self.absent_letters:
-                for j, letter in enumerate(word):
-                    if letter in self.absent_letters:
-                        absent_streak += 1
+            for j, letter in enumerate(word):
+                if letter in self.absent_letters:
+                    letter_is_absent = True
+            if letter_is_absent:
+                continue
 
             # check if letter in correct pos:
             if self.correct_pos:
                 for key, value in self.correct_pos.items():
                     if word[key] == value:
                         correct_streak += 1
+                        word_score += self.letter_counts[value]
 
             # check if letter not in incorrect pos from previous guess(es):
             if self.incorrect_pos:
                 for key, value in self.incorrect_pos.items():
                     if value in word and word[key] != value:
                         present_streak += 1
+                        word_score += self.letter_counts[value]
 
-            if correct_streak == highest_correct_streak and present_streak == highest_present_streak and absent_streak == 0:
-                updated_word_list.insert(0, word)
+            if correct_streak == highest_correct_streak and present_streak == highest_present_streak:
+                if word_score >= highest_word_score:
+                    highest_word_score = word_score
+                    updated_word_list.insert(0, word)
 
         print(f"word list: {updated_word_list}, updated word list length: {len(updated_word_list)}")
         self.incorrect_pos = {}
@@ -117,3 +131,4 @@ class WordleBot:
     def quit(self):
         time.sleep(5)
         self.driver.quit()
+
