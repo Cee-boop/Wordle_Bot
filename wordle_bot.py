@@ -34,6 +34,7 @@ class WordleBot:
 
     def setup(self):
         self.driver.get(WEBSITE)
+        time.sleep(1)
         self.driver.find_element(By.CLASS_NAME, "Modal-module_closeIcon__b4z74").click()
         time.sleep(1)
 
@@ -70,6 +71,8 @@ class WordleBot:
 
             if data_state == "present":
                 self.incorrect_pos[letter_index] = self.bot_guess[letter_index]
+                if self.bot_guess[letter_index] in self.absent_letters:
+                    self.absent_letters.remove(self.bot_guess[letter_index])
             elif data_state == "correct":
                 self.correct_pos[letter_index] = self.bot_guess[letter_index]
                 if self.bot_guess[letter_index] in self.absent_letters:
@@ -115,7 +118,7 @@ class WordleBot:
             # check if letter not in incorrect pos from previous guess(es):
             if self.incorrect_pos:
                 for key, value in self.incorrect_pos.items():
-                    if value in word and word[key] != value:
+                    if value in word and word[key] != value and key not in self.correct_pos:
                         present_streak += 1
                         word_score += self.letter_counts[value]
 
@@ -131,4 +134,3 @@ class WordleBot:
     def quit(self):
         time.sleep(5)
         self.driver.quit()
-
