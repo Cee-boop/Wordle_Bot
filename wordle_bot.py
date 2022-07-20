@@ -10,7 +10,6 @@ from collections import Counter
 
 CHROME_DRIVER_PATH = Service("/Users/chantellefourlze/Development/chromedriver")
 WEBSITE = "https://www.nytimes.com/games/wordle/index.html"
-STARTER_WORDS = ['LATER', 'LEAST', 'STORE', 'RAISE', 'TRAIL', 'TEARS', 'TRIAL', 'SOLAR', 'RATES', 'RATIO', 'TALES', 'TRIES', 'TAILS', 'AROSE', 'ARISE', 'STEAL', 'TIRES', 'ALERT', 'STARE', 'STOLE', 'RAILS', 'ROAST', 'TILES', 'ROLES', 'ALTER', 'SLATE', 'AISLE', 'STAIR', 'RIOTS', 'STALE', 'RITES', 'LASER', 'LOSER', 'LITER', 'ASTIR', 'STILE', 'TOILS', 'LIARS', 'ALTOS', 'ASTER', 'TIERS', 'IRATE', 'EARLS', 'LAIRS', 'TRIOS', 'LORES', 'TEALS', 'ALOES', 'SORTA', 'TARES', 'REALS', 'ISLET', 'SITAR', 'RILES', 'IOTAS', 'TESLA', 'ORALS', 'ROILS', 'LITES', 'ASTRO', 'LITRE', 'ORATE', 'TIROS', 'LOTSA', 'TILER', 'STOAE', 'LIRAS', 'TORSI', 'LIEST', 'OILER', 'TAELS', 'LIERS', 'SLIER', 'RIALS', 'TOILE', 'TAROS', 'STELA', 'OSIER']
 
 
 class WordleBot:
@@ -25,8 +24,8 @@ class WordleBot:
         self.tile_index_position = 0  # keeps track of which tile element to check/fill in each row
 
         # create valid word list:
-        with open(file='word_list.txt') as word_file:
-            self.valid_words = [word.strip().upper() for word in word_file]
+        with open(file="word_list.txt") as word_file:
+            self.valid_words = word_file.read().upper().strip().split(",")
             # all letter frequencies in order:
             self.letter_counts = Counter()
             for word in self.valid_words:
@@ -41,9 +40,6 @@ class WordleBot:
     def guess_word(self):
         # bot guess:
         if self.tile_index_position == 0:
-            random_index = randint(0, len(STARTER_WORDS) - 1)
-            self.bot_guess = STARTER_WORDS[random_index]
-        elif not self.correct_pos and not self.incorrect_pos:
             random_index = randint(0, len(self.valid_words) - 1)
             self.bot_guess = self.valid_words[random_index]
         else:
@@ -71,14 +67,10 @@ class WordleBot:
 
             if data_state == "present":
                 self.incorrect_pos[letter_index] = self.bot_guess[letter_index]
-                if self.bot_guess[letter_index] in self.absent_letters:
-                    self.absent_letters.remove(self.bot_guess[letter_index])
             elif data_state == "correct":
                 self.correct_pos[letter_index] = self.bot_guess[letter_index]
-                if self.bot_guess[letter_index] in self.absent_letters:
-                    self.absent_letters.remove(self.bot_guess[letter_index])
             else:
-                if self.correct_pos and self.bot_guess[letter_index] not in self.correct_pos.values() or not self.correct_pos:
+                if self.bot_guess[letter_index] not in self.absent_letters:
                     self.absent_letters.append(self.bot_guess[letter_index])
 
             letter_index += 1
@@ -105,27 +97,27 @@ class WordleBot:
             for j, letter in enumerate(word):
                 if letter in self.absent_letters:
                     letter_is_absent = True
+
             if letter_is_absent:
                 continue
 
-            # check if letter in correct pos:
-            if self.correct_pos:
-                for key, value in self.correct_pos.items():
-                    if word[key] == value:
-                        correct_streak += 1
-                        word_score += self.letter_counts[value]
-
             # check if letter not in incorrect pos from previous guess(es):
-            if self.incorrect_pos:
-                for key, value in self.incorrect_pos.items():
-                    if value in word and word[key] != value and key not in self.correct_pos:
-                        present_streak += 1
-                        word_score += self.letter_counts[value]
+            for key, value in self.incorrect_pos.items():
+                if value in word and word[key] != value:
+                    present_streak += 1
+                    word_score += self.letter_counts[value]
+            # check if letter in correct pos:
+            for key, value in self.correct_pos.items():
+                if word[key] == value:
+                    correct_streak += 1
+                    word_score += self.letter_counts[value]
 
             if correct_streak == highest_correct_streak and present_streak == highest_present_streak:
                 if word_score >= highest_word_score:
                     highest_word_score = word_score
                     updated_word_list.insert(0, word)
+            else:
+                updated_word_list.append(word)
 
         print(f"word list: {updated_word_list}, updated word list length: {len(updated_word_list)}")
         self.incorrect_pos = {}
