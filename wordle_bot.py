@@ -8,7 +8,7 @@ from random import randint
 from collections import Counter
 
 
-CHROME_DRIVER_PATH = Service("/Users/chantellefourlze/Development/chromedriver")
+CHROME_DRIVER_PATH = Service("/Users/*********/Development/chromedriver")
 WEBSITE = "https://www.nytimes.com/games/wordle/index.html"
 
 
