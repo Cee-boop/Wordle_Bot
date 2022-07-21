@@ -71,8 +71,9 @@ class WordleBot:
                 self.correct_pos[letter_index] = self.bot_guess[letter_index]
             else:
                 if self.bot_guess[letter_index] not in self.absent_letters:
-                    self.absent_letters.append(self.bot_guess[letter_index])
-
+                    if self.bot_guess[letter_index] not in self.incorrect_pos.values() and self.bot_guess[letter_index] not in self.correct_pos.values():
+                        self.absent_letters.append(self.bot_guess[letter_index])
+            
             letter_index += 1
 
         print(f"letters in correct pos: {self.correct_pos}\nletters in incorrect pos: {self.incorrect_pos}\nabsent letters: {self.absent_letters}")
@@ -112,16 +113,21 @@ class WordleBot:
                     correct_streak += 1
                     word_score += self.letter_counts[value]
 
+            repeated_letter = False
             if correct_streak == highest_correct_streak and present_streak == highest_present_streak:
                 if word_score >= highest_word_score:
                     highest_word_score = word_score
-                    updated_word_list.insert(0, word)
-            else:
-                updated_word_list.append(word)
+                    for letter in word:
+                        if word.count(letter) > 1:
+                            updated_word_list.append(word)
+                            break
+                    if not repeated_letter:
+                        updated_word_list.insert(0, word)
 
         print(f"word list: {updated_word_list}, updated word list length: {len(updated_word_list)}")
         self.incorrect_pos = {}
         self.valid_words = updated_word_list
+        time.sleep(500/1000)
 
     def quit(self):
         time.sleep(5)
