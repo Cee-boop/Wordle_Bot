@@ -69,12 +69,14 @@ class WordleBot:
                 self.incorrect_pos[letter_index] = self.bot_guess[letter_index]
             elif data_state == "correct":
                 self.correct_pos[letter_index] = self.bot_guess[letter_index]
-            else:
-                if self.bot_guess[letter_index] not in self.absent_letters:
-                    if self.bot_guess[letter_index] not in self.incorrect_pos.values() and self.bot_guess[letter_index] not in self.correct_pos.values():
-                        self.absent_letters.append(self.bot_guess[letter_index])
-            
+
             letter_index += 1
+        
+        # check if each letter is absent:
+        for letter in self.bot_guess:
+            if letter not in self.absent_letters:
+                if letter not in self.incorrect_pos.values() and letter not in self.correct_pos.values():
+                    self.absent_letters.append(letter)
 
         print(f"letters in correct pos: {self.correct_pos}\nletters in incorrect pos: {self.incorrect_pos}\nabsent letters: {self.absent_letters}")
 
@@ -117,6 +119,7 @@ class WordleBot:
             if correct_streak == highest_correct_streak and present_streak == highest_present_streak:
                 if word_score >= highest_word_score:
                     highest_word_score = word_score
+                    # check if word contains a repeated letter and move word to the end of list:
                     for letter in word:
                         if word.count(letter) > 1:
                             updated_word_list.append(word)
