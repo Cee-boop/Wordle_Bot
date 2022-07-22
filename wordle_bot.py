@@ -8,7 +8,7 @@ from random import randint
 from collections import Counter
 
 
-CHROME_DRIVER_PATH = Service("/Users/*********/Development/chromedriver")
+CHROME_DRIVER_PATH = Service("/Users/chantellefourlze/Development/chromedriver")
 WEBSITE = "https://www.nytimes.com/games/wordle/index.html"
 
 
@@ -71,7 +71,7 @@ class WordleBot:
                 self.correct_pos[letter_index] = self.bot_guess[letter_index]
 
             letter_index += 1
-        
+
         # check if each letter is absent:
         for letter in self.bot_guess:
             if letter not in self.absent_letters:
@@ -123,6 +123,7 @@ class WordleBot:
                     for letter in word:
                         if word.count(letter) > 1:
                             updated_word_list.append(word)
+                            repeated_letter = True
                             break
                     if not repeated_letter:
                         updated_word_list.insert(0, word)
@@ -130,8 +131,8 @@ class WordleBot:
         print(f"word list: {updated_word_list}, updated word list length: {len(updated_word_list)}")
         self.incorrect_pos = {}
         self.valid_words = updated_word_list
-        time.sleep(500/1000)
 
     def quit(self):
         time.sleep(5)
         self.driver.quit()
+
